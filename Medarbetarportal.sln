@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserApi", "UserApi\UserApi.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcobomyApi", "EcobomyApi\EcobomyApi.csproj", "{99C01840-979E-4D00-B997-83D1A826A53B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BenefitsApi", "BenefitsApi\BenefitsApi.csproj", "{D92DA94B-7206-4EE9-BAF9-E8AB47B2C86B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benefits-Api", "Benefits-Api\Benefits-Api.csproj", "{B658EBA5-7417-42C2-93B5-B575A6ED27EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +20,9 @@ Global
 		{99C01840-979E-4D00-B997-83D1A826A53B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99C01840-979E-4D00-B997-83D1A826A53B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99C01840-979E-4D00-B997-83D1A826A53B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D92DA94B-7206-4EE9-BAF9-E8AB47B2C86B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D92DA94B-7206-4EE9-BAF9-E8AB47B2C86B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D92DA94B-7206-4EE9-BAF9-E8AB47B2C86B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D92DA94B-7206-4EE9-BAF9-E8AB47B2C86B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B658EBA5-7417-42C2-93B5-B575A6ED27EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B658EBA5-7417-42C2-93B5-B575A6ED27EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B658EBA5-7417-42C2-93B5-B575A6ED27EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B658EBA5-7417-42C2-93B5-B575A6ED27EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
