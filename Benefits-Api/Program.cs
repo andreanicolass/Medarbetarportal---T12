@@ -4,12 +4,11 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 
 builder.Services.AddControllers();
 
-// KONFIGURATION FÖR DATABAS (SQLite)
-// Här kopplas AppDbContext ihop med SQLite-motorn
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=benefits.db"));
 
