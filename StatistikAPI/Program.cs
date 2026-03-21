@@ -1,16 +1,20 @@
-using ApplicationsApi.Data;
 using Microsoft.EntityFrameworkCore;
+using StatistikAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+// Registrera DbContext med SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=application.db"));
+    options.UseSqlite("Data Source=reports.db"));
+
+builder.Services.AddControllers();
+builder.Services.AddHttpClient(); 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Swagger i development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,5 +22,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
