@@ -16,7 +16,7 @@ namespace EcobomyApi.Controllers
             _context = context;
         }
 
-        // GET ALL
+        // GET ALLmajafridolf
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
