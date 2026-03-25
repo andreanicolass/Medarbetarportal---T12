@@ -14,15 +14,17 @@ public class User
 
     [MaxLength(100)]
     public required string Email { get; set; }
-
+    
     [MaxLength(50)]
     public required string EmployeeId { get; set; }
-    
     public required string Password { get; set; }
     
     public int RoleId { get; set; }
-    public Role? Role { get; set; }
+    public Role? Role { get; set; } 
     public int DepartmentId { get; set; }
-    
-    public Department? Department { get; set; }
+    public Department? Department { get; set; } 
+    public bool IsApproved { get; set; } = false;
+   
+   
+   
 }

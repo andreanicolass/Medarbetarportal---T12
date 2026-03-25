@@ -1,10 +1,11 @@
-﻿namespace UserApi.Controllers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using UserApi.Data;  
+using UserApi.Data;
 using UserApi.Models;
+using UserApi.DTOs;
 
+namespace UserApi.Controllers;
 
 [Authorize]
 [ApiController]
@@ -12,126 +13,64 @@ using UserApi.Models;
 public class UsersController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly IConfiguration _config;
 
-    public UsersController(AppDbContext context, IConfiguration config)
+    public UsersController(AppDbContext context)
     {
         _context = context;
-        _config = config;
     }
 
-    // GET: api/users
+    // GET USERS (ADMIN)
     [HttpGet]
-    public async Task<IActionResult> GetUsers([FromHeader(Name = "x-api-key")] string apiKey)
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUsers()
     {
-        // 🔐 API-KEY CHECK (från config)
-        if (apiKey != _config["ApiKey"])
-        {
-            return Unauthorized("Invalid API Key");
-        }
-
         var users = await _context.Users
-            .Include(u => u.Department) // 🔥 viktigt!
-            .Select(u => new
-            {
-                u.Id,
-                u.FirstName,
-                u.LastName,
-                u.Email,
-                u.EmployeeId,
-                u.DepartmentId,
-                DepartmentName = u.Department != null ? u.Department.Name : null
-            })
+            .Include(u => u.Role)
+            .Include(u => u.Department)
             .ToListAsync();
 
-        return Ok(users);
+        return Ok(users.Select(u => new
+        {
+            u.Id,
+            Name = u.FirstName + " " + u.LastName,
+            u.Email,
+            Role = u.Role!.Name,
+            Department = u.Department!.Name,
+            u.IsApproved
+        }));
     }
 
-    // POST: api/users
-    [HttpPost]
+    // GET ROLES
+    [HttpGet("roles")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateUser(User user)
+    public async Task<IActionResult> GetRoles()
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var departmentExists = await _context.Departments
-            .AnyAsync(d => d.Id == user.DepartmentId);
-
-        if (!departmentExists)
-        {
-            return BadRequest("Department does not exist");
-        }
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, new
-        {
-            user.Id,
-            user.Email
-        });
+        return Ok(await _context.Roles.ToListAsync());
     }
 
-    // PUT: api/users/{id}
+    // GET DEPARTMENTS
+    [HttpGet("departments")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetDepartments()
+    {
+        return Ok(await _context.Departments.ToListAsync());
+    }
+
+    // UPDATE USER (ROLE + DEPARTMENT)
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateUser(int id, User updatedUser)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        if (id != updatedUser.Id)
-        {
-            return BadRequest("Id mismatch");
-        }
-
-        var existingUser = await _context.Users.FindAsync(id);
-
-        if (existingUser == null)
-        {
-            return NotFound();
-        }
-
-        var departmentExists = await _context.Departments
-            .AnyAsync(d => d.Id == updatedUser.DepartmentId);
-
-        if (!departmentExists)
-        {
-            return BadRequest("Department does not exist");
-        }
-
-        // Uppdatera
-        existingUser.FirstName = updatedUser.FirstName;
-        existingUser.LastName = updatedUser.LastName;
-        existingUser.Email = updatedUser.Email;
-        existingUser.EmployeeId = updatedUser.EmployeeId;
-        existingUser.DepartmentId = updatedUser.DepartmentId;
-
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    // DELETE: api/users/{id}
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteUser(int id)
+    public async Task<IActionResult> UpdateUser(int id, UpdateUserDto dto)
     {
         var user = await _context.Users.FindAsync(id);
 
         if (user == null)
-        {
             return NotFound();
-        }
 
-        _context.Users.Remove(user);
+        user.RoleId = dto.RoleId;
+        user.DepartmentId = dto.DepartmentId;
+
         await _context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok();
     }
 }
