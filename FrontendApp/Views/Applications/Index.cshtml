@@ -1,0 +1,33 @@
+﻿@model List<FrontendApp.Models.ApplicationViewModel>
+
+<h1>Ansökningar</h1>
+<a href="/Applications/Create">Skapa ny ansökan</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Anställd</th>
+        <th>Förmån</th>
+        <th>Status</th>
+        <th>Skapad</th>
+        <th>Åtgärder</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var app in Model)
+    {
+        <tr>
+            <td>@app.Id</td>
+            <td>@app.EmployeeId</td>
+            <td>@app.BenefitId</td>
+            <td>@app.Status</td>
+            <td>@app.CreatedDate.ToShortDateString()</td>
+            <td>
+                <a href="/Applications/Edit/@app.Id">Redigera</a>
+                <a href="/Applications/Delete/@app.Id">Ta bort</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
