@@ -1,0 +1,43 @@
+﻿### 1. Padel
+POST http://127.0.0.1:5237/api/Benefits
+Content-Type: application/json
+
+{
+  "title": "Padel-serien",
+  "description": "Boka banor på lokala center. Friskvårdsbidraget kan användas direkt i appen.",
+  "price": 250,
+  "isActive": true
+}
+
+### 2. Golf
+POST http://127.0.0.1:5237/api/Benefits
+Content-Type: application/json
+
+{
+  "title": "Golf-medlemskap",
+  "description": "Rabatterade greenfees och tillgång till övningsområden hela säsongen.",
+  "price": 400,
+  "isActive": true
+}
+
+### 3. Skidåkning
+POST http://127.0.0.1:5237/api/Benefits
+Content-Type: application/json
+
+{
+  "title": "Skidresor & Skipass",
+  "description": "Förmånliga priser på liftkort och boende i både svenska och norska fjällen.",
+  "price": 350,
+  "isActive": true
+}
+
+### 4. Gym
+POST http://127.0.0.1:5237/api/Benefits
+Content-Type: application/json
+
+{
+  "title": "Gym-medlemskap",
+  "description": "Skaffa medlemskap till ett förmånligt pris",
+  "price": 350,
+  "isActive": true
+}
