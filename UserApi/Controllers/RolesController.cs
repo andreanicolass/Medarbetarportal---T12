@@ -6,6 +6,7 @@ using UserApi.Models;
 
 namespace UserApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class RolesController : ControllerBase
@@ -19,6 +20,7 @@ public class RolesController : ControllerBase
 
     // GET: api/roles
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetRoles()
     {
         var roles = await _context.Roles.ToListAsync();

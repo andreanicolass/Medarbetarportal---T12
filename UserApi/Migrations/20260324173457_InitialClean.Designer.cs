@@ -10,8 +10,8 @@ using UserApi.Data;
 namespace UserApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260323220800_AddRoles")]
-    partial class AddRoles
+    [Migration("20260324173457_InitialClean")]
+    partial class InitialClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,9 @@ namespace UserApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -99,18 +102,23 @@ namespace UserApi.Migrations
                     b.HasOne("UserApi.Models.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("UserApi.Models.Role", "Role")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Department");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("UserApi.Models.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

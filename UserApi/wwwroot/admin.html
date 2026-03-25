@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Adminpanel</title>
+    <link rel="stylesheet" href="CSS/admin.css">
+</head>
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <h1>Administrationsportalen</h1>
+    </header>
+
+    <div class="topbar">
+        <button class="btn-primary" onclick="filterPending()">Pending</button>
+        <button class="btn-primary" onclick="loadData()">Alla användare</button>
+    </div>
+
+    <div id="usersContainer" class="card-grid"></div>
+
+</div>
+
+<script src="Js/admin.js"></script>
+</body>
+</html>

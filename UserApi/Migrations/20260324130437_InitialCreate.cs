@@ -5,7 +5,7 @@
 namespace UserApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AddRoles : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,7 +48,8 @@ namespace UserApi.Migrations
                     EmployeeId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Password = table.Column<string>(type: "TEXT", nullable: false),
                     RoleId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DepartmentId = table.Column<int>(type: "INTEGER", nullable: false)
+                    DepartmentId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsApproved = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,13 +59,13 @@ namespace UserApi.Migrations
                         column: x => x.DepartmentId,
                         principalTable: "Departments",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Users_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
