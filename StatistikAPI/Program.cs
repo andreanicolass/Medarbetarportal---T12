@@ -22,6 +22,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.MapGet("/", () => Results.Redirect("/index.html")); 
 app.UseAuthorization();
 app.MapControllers();
 
