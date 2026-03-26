@@ -4,8 +4,8 @@ public class Benefit
 {
     public int Id { get; set; }
     public string? Title { get; set; }
-    public string? Description { get; set; } // Fattas förmodligen här!
-    public int Price { get; set; }           // Fattas förmodligen här!
+    public string? Description { get; set; } 
+    public int Price { get; set; }           
     public bool IsActive { get; set; }
     
     public int? CategoryId { get; set; }
