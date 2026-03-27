@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Förmånsportalen";
+    Layout = null; 
+}
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+
+    <!-- Rätt sökväg till wwwroot -->
+    <link rel="stylesheet" href="~/css/styles.css" />
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<!-- HEADER -->
+<div class="header">
+    Förmånsportalen
+</div>
+
+<div class="container">
+
+    <!-- VÄNSTER -->
+    <div class="left">
+        <h1>Välkommen till din förmånsportal!</h1>
+        <p>
+            Här får du tillgång till förmåner och tjänster kopplade till din anställning.
+        </p>
+    </div>
+
+    <!-- HÖGER -->
+    <div class="right">
+
+        <!-- LOGIN -->
+        <div id="loginBox">
+            <h2>Logga in</h2>
+
+            <input id="loginEmail" placeholder="Email">
+            <input id="loginPassword" type="password" placeholder="Lösenord">
+
+            <button onclick="login()">Logga in</button>
+
+            <p class="link" onclick="showRegister()">
+                Har du inget konto? Registrera dig
+            </p>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="registerBox" style="display:none;">
+            <h2>Registrera</h2>
+
+            <input id="regFirstName" placeholder="Förnamn">
+            <input id="regLastName" placeholder="Efternamn">
+            <input id="regEmployeeId" placeholder="Anställnings-ID">
+            <input id="regEmail" type="email" placeholder="Email" required>
+            <input id="regPassword" type="password" placeholder="Lösenord">
+
+            <button onclick="register()">Registrera</button>
+
+            <p class="link" onclick="showLogin()">
+                Har du redan konto? Logga in
+            </p>
+        </div>
+
+        <p id="message"></p>
+
+    </div>
+</div>
+
+<script src="~/js/script.js"></script>
+
+</body>
+</html>
