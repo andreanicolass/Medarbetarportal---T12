@@ -1,0 +1,22 @@
+﻿@model FrontendApp.Models.ApplicationViewModel
+
+<h1>Redigera ansökan</h1>
+
+<form method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="EmployeeId" value="@Model.EmployeeId" />
+    <input type="hidden" name="BenefitId" value="@Model.BenefitId" />
+    <input type="hidden" name="CreatedDate" value="@Model.CreatedDate" />
+    
+    <div>
+        <label>Status</label>
+        <select name="Status">
+            <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+            <option value="Approved" selected="@(Model.Status == "Approved")">Approved</option>
+            <option value="Rejected" selected="@(Model.Status == "Rejected")">Rejected</option>
+        </select>
+    </div>
+    <button type="submit">Spara</button>
+</form>
+
+<a href="/Applications">Tillbaka</a>
