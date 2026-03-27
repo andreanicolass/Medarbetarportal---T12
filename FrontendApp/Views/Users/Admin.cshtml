@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Adminpanel";
+    Layout = null; // ta bort denna rad om du använder _Layout.cshtml
+}
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+
+    <!-- Rätt väg till wwwroot -->
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <h1>Administrationsportalen</h1>
+    </header>
+
+    <div class="topbar">
+        <button class="btn-primary" onclick="filterPending()">Pending</button>
+        <button class="btn-primary" onclick="loadData()">Alla användare</button>
+    </div>
+
+    <div id="usersContainer" class="card-grid"></div>
+
+</div>
+
+<!--  rätt path -->
+<script src="~/js/admin.js"></script>
+
+</body>
+</html>
