@@ -1,4 +1,5 @@
-﻿function showRegister() {
+﻿const API = "https://medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net"; 
+function showRegister() {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("registerBox").style.display = "block";
 }
@@ -14,7 +15,7 @@ async function login() {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
 
-    const response = await fetch("http://localhost:5094/api/auth/login", {
+    const response = await fetch(`${API}/api/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +81,7 @@ async function register() {
     }
 
     try {
-        const response = await fetch("http://localhost:5094/api/auth/register", {
+        const response = await fetch(`${API}/api/auth/register`, {
             method: "POST",
             credentials: "include",
             headers: {
