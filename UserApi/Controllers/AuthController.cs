@@ -29,11 +29,16 @@ public class AuthController : ControllerBase
         var user = await _context.Users
             .Include(u => u.Role)
             .Include(u => u.Department)
-            .FirstOrDefaultAsync(u => u.Email == login.Email && u.Password == login.Password);
+            .FirstOrDefaultAsync(u => u.Email == login.Email);
 
         if (user == null)
             return Unauthorized("Fel email eller lösenord");
+        
+        bool isValid = BCrypt.Net.BCrypt.Verify(login.Password, user.Password);
 
+        if (!isValid)
+            return Unauthorized("Fel email eller lösenord");
+        
         if (!user.IsApproved)
             return Unauthorized("Kontot är inte godkänt ännu");
 
@@ -68,7 +73,16 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
+        
+        if (dto.Password.Length < 6)
+            return BadRequest("Lösenordet måste vara minst 6 tecken");
+        
+        if (!dto.Password.Any(char.IsUpper))
+            return BadRequest("Måste innehålla en stor bokstav");
 
+        if (!dto.Password.Any(char.IsDigit))
+            return BadRequest("Måste innehålla en siffra");
+        
         var exists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
         if (exists)
             return BadRequest("Email finns redan");
@@ -80,7 +94,7 @@ public class AuthController : ControllerBase
             LastName = dto.LastName,
             EmployeeId = dto.EmployeeId,
             Email = dto.Email,
-            Password = dto.Password,
+            Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             IsApproved = false,
             RoleId = 2,
             DepartmentId = 1
