@@ -1,4 +1,4 @@
-﻿const API = "http://localhost:5094"; 
+﻿const API ="https://medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net"; 
 
 let users = [];
 let roles = [];
