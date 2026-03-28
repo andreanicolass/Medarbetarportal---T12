@@ -23,10 +23,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("https://medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net")
+            policy.AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowAnyMethod();
+
         });
 });
 
@@ -44,10 +44,17 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseAuthentication();
 app.UseCors("AllowFrontend");
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
 
 app.Run();
