@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient("ApplicationsApi", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5252/");
+    client.BaseAddress = new Uri("https://medarbetarportal-applicationsapi-ewfceye9cncmcnb3.polandcentral-01.azurewebsites.net/");
 });
 
 var app = builder.Build();
