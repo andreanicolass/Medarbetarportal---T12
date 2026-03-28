@@ -1,4 +1,4 @@
-﻿const API ="https://medarbetarportal-userapi.azurewebsites.net"; 
+﻿const API = "https://medarbetarportal-userapi.azurewebsites.net";
 
 let users = [];
 let roles = [];
@@ -9,9 +9,9 @@ async function loadData() {
         console.log("Laddar Data...");
 
         const [u, r, d] = await Promise.all([
-            fetch(`${API}/api/users`, { credentials: "include" }),
-            fetch(`${API}/api/users/roles`, { credentials: "include" }),
-            fetch(`${API}/api/users/departments`, { credentials: "include" })
+            fetch(`${API}/api/users`),
+            fetch(`${API}/api/users/roles`),
+            fetch(`${API}/api/users/departments`)
         ]);
 
         if (!u.ok || !r.ok || !d.ok) {
@@ -76,25 +76,25 @@ function render(data) {
             ${
             !user.isApproved
                 ? `
-                        <div class="actions">
-                            <button class="btn-primary" onclick="approve(${user.id})">
-                                Godkänn
-                            </button>
-                            <button class="btn-delete" onclick="deleteUser(${user.id})">
-                                Ta bort
-                            </button>
-                        </div>
-                      `
+                    <div class="actions">
+                        <button class="btn-primary" onclick="approve(${user.id})">
+                            Godkänn
+                        </button>
+                        <button class="btn-delete" onclick="deleteUser(${user.id})">
+                            Ta bort
+                        </button>
+                    </div>
+                  `
                 : `
-                        <div class="actions">
-                            <button class="btn-save" onclick="save(${user.id})">
-                                Spara
-                            </button>
-                            <button class="btn-delete" onclick="deleteUser(${user.id})">
-                                Ta bort
-                            </button>
-                        </div>
-                      `
+                    <div class="actions">
+                        <button class="btn-save" onclick="save(${user.id})">
+                            Spara
+                        </button>
+                        <button class="btn-delete" onclick="deleteUser(${user.id})">
+                            Ta bort
+                        </button>
+                    </div>
+                  `
         }
         `;
 
@@ -104,15 +104,20 @@ function render(data) {
 
 async function approve(id) {
     try {
-        await fetch(`${API}/api/auth/approve/${id}`, {
-            method: "PUT",
-            credentials: "include"
+        const res = await fetch(`${API}/api/auth/approve/${id}`, {
+            method: "PUT"
         });
+
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text);
+        }
 
         loadData();
 
     } catch (err) {
         console.error("Approve error:", err);
+        alert("Fel vid godkännande");
     }
 }
 
@@ -121,9 +126,8 @@ async function save(id) {
     const depId = document.getElementById(`dep-${id}`).value;
 
     try {
-        await fetch(`${API}/api/users/${id}`, {
+        const res = await fetch(`${API}/api/users/${id}`, {
             method: "PUT",
-            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 roleId: parseInt(roleId),
@@ -131,10 +135,16 @@ async function save(id) {
             })
         });
 
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text);
+        }
+
         alert("Ändringar sparade");
 
     } catch (err) {
         console.error("Save error:", err);
+        alert("Fel vid sparande");
     }
 }
 
@@ -142,15 +152,20 @@ async function deleteUser(id) {
     if (!confirm("Är du säker på att du vill ta bort användaren?")) return;
 
     try {
-        await fetch(`${API}/api/users/${id}`, {
-            method: "DELETE",
-            credentials: "include"
+        const res = await fetch(`${API}/api/users/${id}`, {
+            method: "DELETE"
         });
+
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text);
+        }
 
         loadData();
 
     } catch (err) {
         console.error("Delete error:", err);
+        alert("Fel vid borttagning");
     }
 }
 

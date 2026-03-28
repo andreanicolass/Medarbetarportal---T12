@@ -1,4 +1,5 @@
-﻿const API = "https://medarbetarportal-userapi.azurewebsites.net"; 
+﻿const API = "https://medarbetarportal-userapi.azurewebsites.net";
+
 function showRegister() {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("registerBox").style.display = "block";
@@ -12,34 +13,43 @@ function showLogin() {
 // LOGIN
 async function login() {
     console.log("LOGIN KLICKAD");
+
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
 
-    const response = await fetch(`${API}/api/auth/login`, {
-        method: "POST",
-      //  credentials: "include", tar bort temporärt
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
-    console.log("RESPONSE:", response);
+    try {
+        const response = await fetch(`${API}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-    if (response.ok) {
-        const user = await response.json();
-        console.log(user);
+        console.log("RESPONSE:", response);
 
-        localStorage.setItem("user", JSON.stringify(user));
+        if (response.ok) {
+            const user = await response.json();
+            console.log(user);
 
-        // redirect admin
-        if (user.role=== "Admin") {
-            window.location.href = "/Users/Admin";
+            localStorage.setItem("user", JSON.stringify(user));
+
+            if (user.role === "Admin") {
+                window.location.href = "/Users/Admin";
+            } else {
+                document.getElementById("message").innerText = "Inloggad!";
+            }
+
         } else {
-            document.getElementById("message").innerText = "Inloggad!";
+            const text = await response.text();
+            console.error("BACKEND ERROR:", text);
+            document.getElementById("message").innerText = text;
         }
 
-    } else {
-        document.getElementById("message").innerText = "Fel login";
+    } catch (err) {
+        console.error("FETCH ERROR:", err);
+        document.getElementById("message").innerText = "Nätverksfel";
     }
 }
+
 
 // REGISTER
 async function register() {
@@ -52,7 +62,6 @@ async function register() {
     const message = document.getElementById("message");
     const btn = document.querySelector("#registerBox button");
 
-    // disable knapp
     btn.disabled = true;
 
     if (
@@ -64,26 +73,20 @@ async function register() {
     ) {
         message.style.color = "red";
         message.innerText = "Alla fält måste fyllas i korrekt";
+        btn.disabled = false;
         return;
     }
 
-    const email = emailInput.value;
-
-    if (!email.includes("@") || !email.includes(".")) {
+    if (!emailInput.value.includes("@") || !emailInput.value.includes(".")) {
         message.style.color = "red";
         message.innerText = "Ogiltig email";
-        return;
-    }
-
-    if (!firstNameInput.value) {
-        message.innerText = "Förnamn saknas";
+        btn.disabled = false;
         return;
     }
 
     try {
         const response = await fetch(`${API}/api/auth/register`, {
             method: "POST",
-            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -98,43 +101,29 @@ async function register() {
 
         if (response.ok) {
             message.style.color = "green";
-            message.style.opacity = "1";
             message.innerText = "Registrerad! Vänta på admin.";
 
-            // töm fält
             firstNameInput.value = "";
             lastNameInput.value = "";
             employeeIdInput.value = "";
             emailInput.value = "";
             passwordInput.value = "";
 
-            // tillbaka till login
             setTimeout(() => {
                 showLogin();
-            }, 3000);
+            }, 2000);
 
         } else {
             const text = await response.text();
             message.style.color = "red";
-            message.style.opacity = "1";
             message.innerText = text;
         }
 
     } catch (err) {
-        console.error(err);
+        console.error("REGISTER ERROR:", err);
         message.style.color = "red";
         message.innerText = "Något gick fel";
     }
 
     btn.disabled = false;
-
-    // fade ut
-    setTimeout(() => {
-        message.style.opacity = "0";
-    }, 3000);
-
-    setTimeout(() => {
-        message.innerText = "";
-        message.style.opacity = "1";
-    }, 3000);
 }
