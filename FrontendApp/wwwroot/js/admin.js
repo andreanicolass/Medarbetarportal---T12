@@ -1,4 +1,4 @@
-﻿const API ="https://medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net"; 
+﻿const API ="https://medarbetarportal-userapi.azurewebsites.net"; 
 
 let users = [];
 let roles = [];

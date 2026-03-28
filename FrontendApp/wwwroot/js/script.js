@@ -1,4 +1,4 @@
-﻿const API = "https://medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net"; 
+﻿const API = "https://medarbetarportal-userapi.azurewebsites.net"; 
 function showRegister() {
     document.getElementById("loginBox").style.display = "none";
     document.getElementById("registerBox").style.display = "block";
@@ -17,7 +17,7 @@ async function login() {
 
     const response = await fetch(`${API}/api/auth/login`, {
         method: "POST",
-        credentials: "include",
+      //  credentials: "include", tar bort temporärt
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
     });
