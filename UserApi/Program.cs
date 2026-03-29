@@ -7,10 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// DB 
-var dbPath = builder.Environment.IsDevelopment()
-    ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "user.db")
-    : Path.Combine("user.db");
+var dbPath = Path.Combine(
+    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+    "user.db"
+);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
@@ -18,27 +18,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// AUTH 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/api/auth/login";
-        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SameSite = SameSiteMode.None; 
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
-
-//  CORS 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy
-            .SetIsOriginAllowed(origin => origin == "medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
 
 var app = builder.Build();
 
@@ -49,8 +35,24 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+    
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Access-Control-Allow-Origin"] = "https://medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net";
+    context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+    context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type";
+    context.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
 
-app.UseCors("Frontend");
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = 200;
+        return;
+    }
+
+    await next();
+});
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -58,7 +60,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-// SEED DATA 
+// SEED DATA
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
