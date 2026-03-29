@@ -19,11 +19,12 @@ namespace StatistikAPI.Controllers
         {
             try
             {
-                // CHRISTOFFER - Applications API (fråga Christoffer om hans port!)
-                // ÄNDRA DENNA TILL RÄTT PORT!
-                var response = await _httpClient.GetStringAsync("http://localhost:5001/api/applications");
+                var response = await _httpClient.GetStringAsync(
+                    "https://medarbetarportal-applicationsapi-ewfceye9cncmcnb3.polandcentral-01.azurewebsites.net/api/applications"
+                );
+
                 var applications = JsonSerializer.Deserialize<List<object>>(response);
-                return applications.Count;
+                return applications?.Count ?? 0;
             }
             catch (Exception ex)
             {
@@ -36,10 +37,13 @@ namespace StatistikAPI.Controllers
         {
             try
             {
-                // WILLIAM - Benefits API (port 5237)
-                var response = await _httpClient.GetStringAsync("http://localhost:5237/api/benefits");
+                // ⚠️ ÄNDRA till riktig Azure URL om ni har den
+                var response = await _httpClient.GetStringAsync(
+                    "https://medarbetarportal-economyapi.azurewebsites.net/api/benefits"
+                );
+
                 var benefits = JsonSerializer.Deserialize<List<object>>(response);
-                return benefits.Count;
+                return benefits?.Count ?? 0;
             }
             catch (Exception ex)
             {
@@ -52,10 +56,12 @@ namespace StatistikAPI.Controllers
         {
             try
             {
-                // ANDREA - Users API (port 5094)
-                var response = await _httpClient.GetStringAsync("http://localhost:5094/api/users");
+                var response = await _httpClient.GetStringAsync(
+                    "https://medarbetarportal-userapi.azurewebsites.net/api/users"
+                );
+
                 var users = JsonSerializer.Deserialize<List<object>>(response);
-                return users.Count;
+                return users?.Count ?? 0;
             }
             catch (Exception ex)
             {
@@ -63,26 +69,28 @@ namespace StatistikAPI.Controllers
             }
         }
         
-        // EXTRA - Om du vill ha en sammanställning av allt
         [HttpGet("dashboard-summary")]
         public async Task<ActionResult<object>> GetDashboardSummary()
         {
             try
             {
-                var benefitsTask = _httpClient.GetStringAsync("http://localhost:5237/api/benefits");
-                var usersTask = _httpClient.GetStringAsync("http://localhost:5094/api/users");
-                
-                // Vänta på båda anropen samtidigt
+                var benefitsTask = _httpClient.GetStringAsync(
+                    "https://medarbetarportal-economyapi.azurewebsites.net/api/benefits"
+                );
+
+                var usersTask = _httpClient.GetStringAsync(
+                    "https://medarbetarportal-userapi.azurewebsites.net/api/users"
+                );
+
                 await Task.WhenAll(benefitsTask, usersTask);
-                
+
                 var benefits = JsonSerializer.Deserialize<List<object>>(await benefitsTask);
                 var users = JsonSerializer.Deserialize<List<object>>(await usersTask);
-                
+
                 return Ok(new
                 {
-                    TotalBenefits = benefits.Count,
-                    TotalUsers = users.Count,
-                    // Applications tillkommer när du får Christoffers port
+                    TotalBenefits = benefits?.Count ?? 0,
+                    TotalUsers = users?.Count ?? 0,
                 });
             }
             catch (Exception ex)
