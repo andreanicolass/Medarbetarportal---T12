@@ -21,15 +21,15 @@ public class AuthController : ControllerBase
         _context = context;
     }
 
-    // LOGIN Temporär
+    //  LOGIN
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginDto? login)
     {
         try
         {
-            if (login == null)
-                return BadRequest("Login är null");
+            if (login == null || string.IsNullOrEmpty(login.Email) || string.IsNullOrEmpty(login.Password))
+                return BadRequest("Email och lösenord krävs");
 
             var user = await _context.Users
                 .Include(u => u.Role)
@@ -37,39 +37,48 @@ public class AuthController : ControllerBase
                 .FirstOrDefaultAsync(u => u.Email == login.Email);
 
             if (user == null)
-                return Unauthorized("User finns inte");
+                return Unauthorized("Fel email eller lösenord");
 
-            if (user.Password == null)
-                return StatusCode(500, "Password är null i DB");
+            if (!BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
+                return Unauthorized("Fel email eller lösenord");
 
-            bool isValid = BCrypt.Net.BCrypt.Verify(login.Password, user.Password);
+            if (!user.IsApproved)
+                return Unauthorized("Kontot är inte godkänt ännu");
 
-            if (!isValid)
-                return Unauthorized("Fel lösenord");
-
-            var roleName = user.Role?.Name ?? "NO ROLE";
+            var roleName = user.Role?.Name ?? "User";
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Email ?? "NO EMAIL"),
+                new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.Role, roleName),
                 new Claim("UserId", user.Id.ToString())
             };
 
+            //  authentication scheme
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            var principal = new ClaimsPrincipal(identity);
+
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(new ClaimsIdentity(claims)));
+                principal
+            );
 
             return Ok(new
             {
+                user.Id,
+                Name = user.FirstName + " " + user.LastName,
                 user.Email,
                 Role = roleName,
-                Department = user.Department?.Name ?? "NO DEPT"
+                Department = user.Department?.Name ?? "Ingen"
             });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"ERROR: {ex.Message}");
+            return StatusCode(500, $"LOGIN ERROR: {ex.Message}");
         }
     }
 
@@ -83,7 +92,7 @@ public class AuthController : ControllerBase
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (dto.Password.Length < 6)
+            if (string.IsNullOrEmpty(dto.Password) || dto.Password.Length < 6)
                 return BadRequest("Lösenordet måste vara minst 6 tecken");
 
             if (!dto.Password.Any(char.IsUpper))
@@ -96,16 +105,23 @@ public class AuthController : ControllerBase
             if (exists)
                 return BadRequest("Email finns redan");
 
+            // HÄMTA ROLE & DEPARTMENT (inte hårdkodat!)
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Employee");
+            var department = await _context.Departments.FirstOrDefaultAsync(d => d.Name == "Staff");
+
+            if (role == null || department == null)
+                return StatusCode(500, "Role eller Department saknas i databasen");
+
             var user = new User
             {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
+                FirstName = dto.FirstName!,
+                LastName = dto.LastName!,
                 EmployeeId = dto.EmployeeId,
-                Email = dto.Email,
+                Email = dto.Email!,
                 Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                IsApproved = true,
-                RoleId = 2,
-                DepartmentId = 1
+                IsApproved = false,
+                RoleId = role.Id,
+                DepartmentId = department.Id
             };
 
             _context.Users.Add(user);
