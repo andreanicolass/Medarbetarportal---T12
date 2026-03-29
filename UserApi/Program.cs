@@ -6,6 +6,7 @@ using UserApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
 var dbPath = Path.Combine(
     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
     "user.db"
@@ -21,17 +22,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/api/auth/login";
+        options.Cookie.SameSite = SameSiteMode.None; 
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
 
 var app = builder.Build();
 
@@ -42,9 +35,24 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
+    
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Access-Control-Allow-Origin"] = "https://medarbetarportal-ajgsfkg4gug3bpbb.polandcentral-01.azurewebsites.net";
+    context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+    context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type";
+    context.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
 
-app.UseCors("AllowFrontend");
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = 200;
+        return;
+    }
+
+    await next();
+});
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -58,7 +66,6 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 
-    // ROLES
     if (!db.Roles.Any())
     {
         db.Roles.AddRange(
@@ -70,7 +77,6 @@ using (var scope = app.Services.CreateScope())
         );
     }
 
-    // DEPARTMENTS
     if (!db.Departments.Any())
     {
         db.Departments.AddRange(
@@ -84,7 +90,6 @@ using (var scope = app.Services.CreateScope())
 
     db.SaveChanges();
 
-    // USERS
     void AddUser(string email, string roleName, string depName, string firstName, string lastName, string empId, string password)
     {
         if (!db.Users.Any(u => u.Email == email))
@@ -114,4 +119,5 @@ using (var scope = app.Services.CreateScope())
 
     db.SaveChanges();
 }
+
 app.Run();
