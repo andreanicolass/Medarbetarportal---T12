@@ -21,6 +21,7 @@ async function login() {
         const response = await fetch(`${API}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include", // credentials
             body: JSON.stringify({ email, password })
         });
 
@@ -90,6 +91,7 @@ async function register() {
             headers: {
                 "Content-Type": "application/json"
             },
+            credentials: "include", 
             body: JSON.stringify({
                 firstName: firstNameInput.value,
                 lastName: lastNameInput.value,

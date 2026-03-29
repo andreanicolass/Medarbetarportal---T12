@@ -9,12 +9,15 @@ async function loadData() {
         console.log("Laddar Data...");
 
         const [u, r, d] = await Promise.all([
-            fetch(`${API}/api/users`),
-            fetch(`${API}/api/users/roles`),
-            fetch(`${API}/api/users/departments`)
+            fetch(`${API}/api/users`, { credentials: "include" }),
+            fetch(`${API}/api/users/roles`, { credentials: "include" }),
+            fetch(`${API}/api/users/departments`, { credentials: "include" })
         ]);
 
         if (!u.ok || !r.ok || !d.ok) {
+            if (u.status === 401 || r.status === 401 || d.status === 401) {
+                throw new Error("Inte inloggad (401)");
+            }
             throw new Error("API svarade inte korrekt");
         }
 
@@ -28,6 +31,11 @@ async function loadData() {
 
     } catch (err) {
         console.error("Fel vid laddning:", err);
+
+        if (err.message.includes("401")) {
+            alert("Du är inte inloggad. Logga in igen.");
+            window.location.href = "/"; // tillbaka till login
+        }
     }
 }
 
@@ -105,7 +113,8 @@ function render(data) {
 async function approve(id) {
     try {
         const res = await fetch(`${API}/api/auth/approve/${id}`, {
-            method: "PUT"
+            method: "PUT",
+            credentials: "include"
         });
 
         if (!res.ok) {
@@ -129,6 +138,7 @@ async function save(id) {
         const res = await fetch(`${API}/api/users/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({
                 roleId: parseInt(roleId),
                 departmentId: parseInt(depId)
@@ -153,7 +163,8 @@ async function deleteUser(id) {
 
     try {
         const res = await fetch(`${API}/api/users/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            credentials: "include"
         });
 
         if (!res.ok) {
