@@ -25,10 +25,22 @@ public class BenefitsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Benefit>> PostBenefit(Benefit benefit)
     {
-        _context.Benefits.Add(benefit);
-        await _context.SaveChangesAsync();
+        try
+        {
+            
+            benefit.Category = null;
+            benefit.CategoryId = null;
 
-        return CreatedAtAction(nameof(GetBenefits), new { id = benefit.Id }, benefit);
+            _context.Benefits.Add(benefit);
+            await _context.SaveChangesAsync();
+            return Ok(benefit);
+        }
+        catch (Exception ex)
+        {
+           
+            var realError = ex.InnerException?.Message ?? ex.Message;
+            return StatusCode(500, $"Databas-fel: {realError}");
+        }
     }
     
     [HttpPut("{id}")]

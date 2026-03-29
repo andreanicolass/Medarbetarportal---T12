@@ -423,3 +423,8 @@ FodyWeavers.xsd
 *.db-shm
 *.db-wal
 
+#  Williams anpassningar
+*.db
+*.db-shm
+*.db-wal
+
