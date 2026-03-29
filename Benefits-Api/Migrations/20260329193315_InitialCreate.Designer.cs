@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Benefits_Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260318154254_InitialCreate")]
+    [Migration("20260329193315_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,21 +25,19 @@ namespace Benefits_Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("REAL");
+                    b.Property<int>("Price")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -56,7 +54,6 @@ namespace Benefits_Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -68,9 +65,7 @@ namespace Benefits_Api.Migrations
                 {
                     b.HasOne("Benefits_Api.Models.Category", "Category")
                         .WithMany("Benefits")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
                 });

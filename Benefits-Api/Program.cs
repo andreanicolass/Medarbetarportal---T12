@@ -1,22 +1,19 @@
 using Benefits_Api.Data;
+using Benefits_Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Hantera JSON-inställningar (viktigt för listor och relationer)
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// 2. Koppling till databasen
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=benefits.db"));
 
-// 3. CORS - Detta är vad din polare i React behöver!
-// Det tillåter hans app att anropa ditt API trots att de körs på olika portar.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -29,22 +26,63 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// 4. Konfigurera Swagger/Scalar för dokumentation
-if (app.Environment.IsDevelopment())
+app.MapOpenApi();
+app.MapScalarApiReference();
+
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    
+    context.Database.Migrate();
+
+    if (!context.Benefits.Any())
+    {
+        context.Benefits.AddRange(
+            new Benefit { 
+                Title = "Padel-serien", 
+                Description = "Boka banor på lokala center. Friskvårdsbidraget kan användas direkt i appen.", 
+                Price = 250, 
+                IsActive = true 
+            },
+            new Benefit { 
+                Title = "Golf-medlemskap", 
+                Description = "Rabatterade greenfees och tillgång till övningsområden hela säsongen.", 
+                Price = 400, 
+                IsActive = true 
+            },
+            new Benefit { 
+                Title = "Skidresor & Skipass", 
+                Description = "Förmånliga priser på liftkort och boende i både svenska och norska fjällen.", 
+                Price = 350, 
+                IsActive = true 
+            },
+            new Benefit { 
+                Title = "Gym-medlemskap", 
+                Description = "Skaffa medlemskap till ett förmånligt pris", 
+                Price = 350, 
+                IsActive = true 
+            },
+            new Benefit { 
+                Title = "Företagsmassage", 
+                Description = "30 minuter klassisk massage per månad på kontoret.", 
+                Price = 350, 
+                IsActive = true 
+            },
+            new Benefit { 
+                Title = "Västtrafik Periodkort", 
+                Description = "Subventionerat månadskort för zon A+B.", 
+                Price = 800, 
+                IsActive = true 
+            }
+        );
+        context.SaveChanges();
+    }
 }
 
-// Om din polare får problem med "HTTPS/SSL" i React, kan du tillfälligt 
-// kommentera ut raden nedan under utveckling.
 app.UseHttpsRedirection();
-
-// VIKTIGT: UseCors måste ligga här, efter redirection men före controllers
 app.UseCors("AllowAll");
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

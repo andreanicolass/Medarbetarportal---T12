@@ -7,9 +7,9 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
     {
-        
-        Database.EnsureCreated(); 
+       
     }
+    
     public DbSet<Benefit> Benefits { get; set; }
     public DbSet<Category> Categories { get; set; }
 }
