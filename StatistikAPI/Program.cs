@@ -12,6 +12,20 @@ builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ===============================
+// ✅ ENDA TILLÄGGET: CORS
+// ===============================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
 // Swagger i development
@@ -22,8 +36,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// ⚠️ BEHÅLLER DIN KOD
 app.UseStaticFiles();
-app.MapGet("/", () => Results.Redirect("/index.html")); 
+
+app.MapGet("/", () => Results.Redirect("/index.html"));
+
+// ===============================
+// ✅ ENDA MIDDLEWARE TILLÄGG
+// ===============================
+app.UseCors("AllowReact");
+
 app.UseAuthorization();
 app.MapControllers();
 
