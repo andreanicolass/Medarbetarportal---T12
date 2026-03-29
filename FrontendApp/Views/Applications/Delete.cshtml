@@ -1,0 +1,19 @@
+﻿@model FrontendApp.Models.ApplicationViewModel
+
+<h1>Ta bort ansökan</h1>
+
+<p>Är du säker på att du vill ta bort ansökan?</p>
+
+<table>
+    <tr><td>Id</td><td>@Model.Id</td></tr>
+    <tr><td>Anställd</td><td>@Model.EmployeeId</td></tr>
+    <tr><td>Förmån ID</td><td>@Model.BenefitId</td></tr>
+    <tr><td>Status</td><td>@Model.Status</td></tr>
+</table>
+
+<form method="post">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <button type="submit">Ja, ta bort</button>
+</form>
+
+<a href="/Applications">Avbryt</a>

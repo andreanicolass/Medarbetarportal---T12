@@ -419,6 +419,9 @@ FodyWeavers.xsd
 
 # Rider
 .idea/
+*.db
+*.db-shm
+*.db-wal
 
 #  Williams anpassningar
 *.db
