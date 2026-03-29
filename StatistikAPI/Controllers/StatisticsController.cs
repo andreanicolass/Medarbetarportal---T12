@@ -37,9 +37,9 @@ namespace StatistikAPI.Controllers
         {
             try
             {
-                // ⚠️ ÄNDRA till riktig Azure URL om ni har den
+                // ⚠️ ÄNDRA till riktig Azure URL om ni har den (William)
                 var response = await _httpClient.GetStringAsync(
-                    "https://medarbetarportal-benefits-william-hcb4ehh6cnd2d8f8.polandcentral-01.azurewebsites.net/api/benefits"
+                    "https://medarbetarportal-benefits-william-hcb4ehh6cnd2d8f8.polandcentral-01.azurewebsites.net/api/benefits "
                 );
 
                 var benefits = JsonSerializer.Deserialize<List<object>>(response);
