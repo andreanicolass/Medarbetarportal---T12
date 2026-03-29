@@ -1,120 +1,144 @@
 ﻿@model IEnumerable<Medarbetarportal.Web.Models.Benefit>
 
 @{
-    ViewData["Title"] = "Förmånsportal";
+    ViewData["Title"] = "Dashboard";
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
-    
-    .dashboard-bg {
-        background: #f8f9fa;
+    body {
+        background-image: url('/images/Background.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
         min-height: 100vh;
-        padding-top: 2rem;
+    }
+
+    .dashboard-title {
+        color: white !important; 
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .dashboard-subtitle {
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+        font-weight: 500;
     }
 
     .william-card {
         border: none;
         border-radius: 20px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        background: #ffffff;
-    }
-
-    .william-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+        transition: all 0.3s ease;
+        background: white;
+        overflow: hidden;
     }
 
     .icon-box {
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #28a745 0%, #1c7430 100%);
+        width: 55px;
+        height: 55px;
+        background: linear-gradient(135deg, #1f7a5c 0%, #0b5d3b 100%);
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         margin-bottom: 1rem;
     }
 
     .price-tag {
-        color: #28a745;
+        color: #1f7a5c;
         font-weight: 800;
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+    }
+    
+    .claim-section {
+        display: none; 
+        background: #f8f9fa;
+        border: 2px dashed #1f7a5c;
+        border-radius: 10px;
+        padding: 10px;
+        margin-top: 15px;
+        animation: fadeIn 0.4s ease;
     }
 
-    .custom-badge {
-        background: rgba(40, 167, 69, 0.1);
-        color: #1c7430;
-        border: 1px solid rgba(40, 167, 69, 0.2);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        font-weight: 700;
-        padding: 5px 10px;
-        border-radius: 8px;
+    .code-text {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        color: #1f7a5c;
+        letter-spacing: 2px;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 
-<div class="dashboard-bg">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold text-dark">Välkommen till Portalen</h1>
-            <p class="lead text-muted">Här hittar du dina aktuella förmåner och erbjudanden.</p>
-        </div>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 dashboard-title">Välkommen till Portalen</h1>
+        <p class="lead dashboard-subtitle">Klicka på "Hämta kod" för att nyttja din förmån.</p>
+    </div>
 
-        <div class="row">
-            @if (Model != null && Model.Any())
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var benefit in Model)
             {
-                @foreach (var benefit in Model)
+                var iconClass = benefit.Title?.ToLower() switch
                 {
-                    var iconClass = benefit.Title?.ToLower() switch
-                    {
-                        var t when t.Contains("padel") => "bi-trophy",
-                        var t when t.Contains("golf") => "bi-flag-fill",
-                        var t when t.Contains("skid") => "bi-snow",
-                        var t when t.Contains("gym") => "bi-person-arms-up",
-                        _ => "bi-star-fill"
-                    };
+                    var t when t.Contains("padel") => "bi-trophy",
+                    var t when t.Contains("golf") => "bi-flag-fill",
+                    var t when t.Contains("skid") => "bi-snow",
+                    var t when t.Contains("gym") => "bi-person-arms-up",
+                    var t when t.Contains("massage") => "bi-heart-pulse",
+                    var t when t.Contains("västtrafik") || t.Contains("buss") => "bi-bus-front",
+                    _ => "bi-star-fill"
+                };
 
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 william-card shadow-sm p-3">
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div class="icon-box">
-                                        <i class="bi @iconClass"></i>
-                                    </div>
-                                    <span class="custom-badge">Aktiv Förmån</span>
-                                </div>
-
-                                <h4 class="card-title fw-bold text-dark">@benefit.Title</h4>
-                                <p class="card-text text-muted">@benefit.Description</p>
-
-                                <div class="mt-auto pt-3 border-top border-light">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <small class="text-muted d-block">Månadskostnad</small>
-                                            <span class="price-tag">@benefit.Price kr</span>
-                                        </div>
-                                        <a href="#" class="btn btn-dark btn-sm rounded-pill px-4">Läs mer</a>
-                                    </div>
-                                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 william-card shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="icon-box">
+                                <i class="bi @iconClass"></i>
                             </div>
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">AKTIV</span>
                         </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="col-12 text-center">
-                    <div class="alert alert-info shadow-sm border-0 rounded-4 p-5">
-                        <i class="bi bi-cloud-slash display-1 d-block mb-3"></i>
-                        <h4 class="alert-heading fw-bold">Hittade inga förmåner just nu</h4>
-                        <p class="mb-0">Kontrollera att ditt <strong>Benefits-Api</strong> är igång och att porten stämmer i DashboardController.</p>
+
+                        <h4 class="fw-bold text-dark">@benefit.Title</h4>
+                        <p class="text-muted" style="height: 50px; overflow: hidden;">@benefit.Description</p>
+
+                        <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                            <span class="price-tag">@benefit.Price kr</span>
+                            
+                            <button class="btn btn-dark rounded-pill px-4" onclick="toggleClaim('@benefit.Id')">
+                                Hämta kod
+                            </button>
+                        </div>
+                        
+                        <div id="claim-@benefit.Id" class="claim-section text-center">
+                            <small class="text-muted d-block mb-1">Visa denna kod i kassan:</small>
+                            <span class="code-text text-uppercase">PORTAL-@benefit.Id@DateTime.Now.Day</span>
+                        </div>
                     </div>
                 </div>
             }
-        </div>
+        }
     </div>
 </div>
+
+<script>
+    function toggleClaim(id) {
+        var element = document.getElementById('claim-' + id);
+        if (element.style.display === 'block') {
+            element.style.display = 'none';
+        } else {
+            element.style.display = 'block';
+        }
+    }
+</script>

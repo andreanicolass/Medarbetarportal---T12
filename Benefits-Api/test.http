@@ -41,3 +41,23 @@ Content-Type: application/json
   "price": 350,
   "isActive": true
 }
+
+### 5. Massage
+POST http://127.0.0.1:5237/api/Benefits
+Content-Type: application/json
+
+{
+  "title": "Företagsmassage",
+  "description": "30 minuter klassisk massage per månad på kontoret.",
+  "price": 350
+}
+
+### 6. Kollektivtrafik
+POST http://127.0.0.1:5237/api/Benefits
+Content-Type: application/json
+
+{
+  "title": "Västtrafik Periodkort",
+  "description": "Subventionerat månadskort för zon A+B.",
+  "price": 800
+}
